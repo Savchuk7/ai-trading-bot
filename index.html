@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+
+<html lang="uk">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="theme-color" content="#0b1020">
+
+<title>AI Trading Bot — Демо</title>
+
+<style>
+
+*{box-sizing:border-box}
+
+body{margin:0;background:#0b1020;color:#fff;font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif;padding:20px}
+
+main{max-width:520px;margin:auto}
+
+h1{font-size:27px;margin-bottom:5px}
+
+p,small{color:#a9b5ca}
+
+.card{background:#182237;border:1px solid #2c3b54;border-radius:17px;padding:18px;margin-top:17px}
+
+label{display:block;margin:14px 0 7px}
+
+select,button{width:100%;padding:14px;border-radius:11px;font-size:16px}
+
+select{background:#0e1729;color:white;border:1px solid #40516a}
+
+button{background:#13c8bd;border:0;font-weight:bold;margin-top:17px}
+
+.result{font-size:25px;font-weight:bold;margin:12px 0}
+
+.up{color:#45dc9b}.down{color:#ff7979}
+
+.neutral{color:#f8ce76}
+
+svg{width:100%;height:190px;background:#0e1729;border-radius:12px}
+
+</style>
+
+</head>
+
+<body>
+
+<main>
+
+<h1>📈 AI Trading Bot</h1>
+
+<p>Демонстраційний аналіз M1 · Без реальних угод</p>
+
+<div class="card">
+
+<label for="pair">Валютна пара</label>
+
+<select id="pair">
+
+<option>EUR/USD</option>
+
+<option>GBP/USD</option>
+
+<option>USD/JPY</option>
+
+<option>AUD/USD</option>
+
+<option>USD/CHF</option>
+
+</select>
+
+<label for="mode">Режим</label>
+
+<select id="mode">
+
+<option>Демо — навчальні дані</option>
+
+</select>
+
+<button onclick="analyze()">Аналізувати 1 хвилину</button>
+
+</div>
+
+<div class="card">
+
+<h3>Навчальний графік</h3>
+
+<svg viewBox="0 0 320 190" aria-label="Демонстраційний графік">
+
+<polyline id="line" fill="none" stroke="#13c8bd" stroke-width="3" points=""/>
+
+</svg>
+
+<small>Це згенеровані дані, не котирування Pocket Option.</small>
+
+</div>
+
+<div class="card">
+
+<h3>Результат аналізу</h3>
+
+<div id="signal" class="result neutral">Очікування аналізу</div>
+
+<p id="details">Натисни кнопку аналізу.</p>
+
+<p id="timer"></p>
+
+</div>
+
+<p><small>Демонстрація не прогнозує реальні ціни. Для роботи з ринком потрібне підключення перевіреного джерела даних і тестування точності.</small></p>
+
+</main>
+
+<script>
+
+let interval;
+
+function analyze(){
+
+clearInterval(interval);
+
+const prices=[100];
+
+for(let i=1;i<30;i++){
+
+ prices.push(prices[i-1]+(Math.random()-.5)*2);
+
+}
+
+const points=prices.map((v,i)=>{
+
+ const x=10+i*300/29;
+
+ const y=95-(v-100)*9;
+
+ return x.toFixed(1)+","+Math.max(8,Math.min(182,y)).toFixed(1);
+
+}).join(" ");
+
+document.getElementById("line").setAttribute("points",points);
+
+const first=prices.slice(0,10).reduce((a,b)=>a+b,0)/10;
+
+const last=prices.slice(-10).reduce((a,b)=>a+b,0)/10;
+
+const change=last-first;
+
+const signal=document.getElementById("signal");
+
+const details=document.getElementById("details");
+
+if(change>0.3){
+
+ signal.textContent="↑ Навчальний тренд: ВГОРУ";
+
+ signal.className="result up";
+
+}else if(change<-.3){
+
+ signal.textContent="↓ Навчальний тренд: ВНИЗ";
+
+ signal.className="result down";
+
+}else{
+
+ signal.textContent="→ Невизначений тренд";
+
+ signal.className="result neutral";
+
+}
+
+details.textContent="Пара: "+document.getElementById("pair").value+
+
+". Результат розрахований лише на випадкових навчальних даних. Це не торговий сигнал.";
+
+let seconds=60;
+
+const timer=document.getElementById("timer");
+
+timer.textContent="Навчальний таймер: 60 с";
+
+interval=setInterval(()=>{
+
+ seconds--;
+
+ timer.textContent=seconds>0?
+
+ "Навчальний таймер: "+seconds+" с":"Хвилина завершилась";
+
+ if(seconds<=0)clearInterval(interval);
+
+},1000);
+
+}
+
+</script>
+
+</body>
+
+</html>
